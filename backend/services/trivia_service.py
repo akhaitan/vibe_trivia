@@ -52,6 +52,8 @@ class TriviaService:
         }
         
         # Log the exact request being sent
+        
+        '''
         logger.info("=" * 80)
         logger.info("OPENAI API REQUEST")
         logger.info("=" * 80)
@@ -64,6 +66,7 @@ class TriviaService:
             logger.info(f"  [{i}] Role: {msg['role']}")
             logger.info(f"      Content: {msg['content']}")
         logger.info("=" * 80)
+        '''
         
         try:
             try:
@@ -84,6 +87,7 @@ class TriviaService:
                     raise
             
             # Log the exact raw response
+            '''
             logger.info("=" * 80)
             logger.info("OPENAI API RESPONSE (RAW)")
             logger.info("=" * 80)
@@ -94,7 +98,7 @@ class TriviaService:
             logger.info(f"Usage - Completion tokens: {response.usage.completion_tokens}")
             logger.info(f"Usage - Total tokens: {response.usage.total_tokens}")
             logger.info(f"Choices count: {len(response.choices)}")
-            
+            '''
             content = response.choices[0].message.content
             if not content:
                 logger.error("Empty content in OpenAI response")
