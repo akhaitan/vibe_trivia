@@ -42,10 +42,11 @@
      ```bash
      chmod +x build.sh && ./build.sh
      ```
-     OR manually:
+     OR use the simple version (if build script fails):
      ```bash
-     export CARGO_HOME=/tmp/cargo && export RUSTUP_HOME=/tmp/rustup && pip install --upgrade pip && pip install -r requirements.txt
+     pip install --upgrade pip && pip install -r requirements.txt
      ```
+     Note: The build script handles Rust/Cargo setup automatically if needed. Since we're using `uvicorn` (not `uvicorn[standard]`) and `psycopg3`, no Rust compilation should be needed.
    - **Start Command**: `uvicorn backend.main:app --host 0.0.0.0 --port $PORT`
 
 4. **Add Environment Variable:**
