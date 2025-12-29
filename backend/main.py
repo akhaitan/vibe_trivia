@@ -1,5 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from dotenv import load_dotenv
 import os
 import logging
@@ -41,6 +43,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Get the path to frontend directory
+frontend_path = os.path.join(os.path.dirname(__file__), "..", "frontend")
+frontend_exists = os.path.exists(frontend_path)
+
+# Serve static files (CSS, JS) if frontend directory exists
+if frontend_exists:
+    logger.info(f"Serving frontend from: {frontend_path}")
+
 # Initialize services
 trivia_service = TriviaService()
 scoring_service = ScoringService()
@@ -49,7 +59,11 @@ persistence_service = PersistenceService()
 
 @app.get("/")
 def root():
-    """Health check endpoint."""
+    """Serve frontend index.html or health check."""
+    if frontend_exists:
+        index_path = os.path.join(frontend_path, "index.html")
+        if os.path.exists(index_path):
+            return FileResponse(index_path)
     return {"status": "ok", "message": "Trivia API is running"}
 
 
@@ -166,6 +180,44 @@ def get_history():
     """
     attempts = persistence_service.get_all_attempts()
     return ScoresResponse(attempts=attempts)
+
+
+# Serve frontend files (CSS, JS, and other assets)
+# These routes must come before the catch-all route but after API routes
+if frontend_exists:
+    @app.get("/styles.css")
+    def serve_css():
+        """Serve CSS file."""
+        return FileResponse(os.path.join(frontend_path, "styles.css"))
+    
+    @app.get("/app.js")
+    def serve_js():
+        """Serve JavaScript file."""
+        return FileResponse(os.path.join(frontend_path, "app.js"))
+
+
+# Serve frontend files (for SPA routing) - MUST be last to not interfere with API routes
+@app.get("/{path:path}")
+def serve_frontend(path: str):
+    """
+    Serve frontend files. For API routes, let them pass through.
+    For other paths, serve frontend files or index.html for SPA routing.
+    """
+    # Don't interfere with API routes
+    if path.startswith("api/"):
+        raise HTTPException(status_code=404, detail="API endpoint not found")
+    
+    if frontend_exists:
+        file_path = os.path.join(frontend_path, path)
+        # If it's a file that exists, serve it
+        if os.path.exists(file_path) and os.path.isfile(file_path):
+            return FileResponse(file_path)
+        # For SPA routing (e.g., /quiz, /results), return index.html
+        index_path = os.path.join(frontend_path, "index.html")
+        if os.path.exists(index_path):
+            return FileResponse(index_path)
+    
+    raise HTTPException(status_code=404, detail="Not found")
 
 
 if __name__ == "__main__":

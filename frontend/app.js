@@ -1,5 +1,10 @@
 // API Configuration
-const API_BASE_URL = 'http://localhost:8000';
+// Use relative URLs when frontend and backend are on same origin (production)
+// Use localhost:8000 when frontend is served separately (local dev with HTTP server)
+const API_BASE_URL = (window.location.origin === 'http://localhost:8080' || 
+                      window.location.origin === 'http://127.0.0.1:8080')
+    ? 'http://localhost:8000' 
+    : '';  // Empty string = same origin (works when served from FastAPI)
 
 // State Management
 let currentQuiz = {
