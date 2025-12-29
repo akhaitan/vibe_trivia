@@ -37,16 +37,18 @@
 3. **Configure Service:**
    - **Name**: trivia-backend (or your choice)
    - **Environment**: Python 3
-   - **Python Version**: Set to 3.11 (in Advanced settings) or use `runtime.txt`
+   - **Python Version**: **IMPORTANT** - Set to Python 3.11 in Render settings (Advanced → Python Version)
+     - Or Render will automatically use `runtime.txt` which specifies Python 3.11.9
+     - Python 3.13 doesn't have pre-built wheels for pydantic-core yet
    - **Build Command**: 
      ```bash
      chmod +x build.sh && ./build.sh
      ```
-     OR use the simple version (if build script fails):
+     OR manually (if build script has issues):
      ```bash
-     pip install --upgrade pip && pip install -r requirements.txt
+     export CARGO_HOME=/tmp/cargo && export RUSTUP_HOME=/tmp/rustup && export CARGO_TARGET_DIR=/tmp/cargo-target && mkdir -p /tmp/cargo /tmp/rustup /tmp/cargo-target && pip install --upgrade pip && pip install -r requirements.txt
      ```
-     Note: The build script handles Rust/Cargo setup automatically if needed. Since we're using `uvicorn` (not `uvicorn[standard]`) and `psycopg3`, no Rust compilation should be needed.
+     Note: The build script handles Rust/Cargo setup for pydantic-core compilation. Python 3.11 is required to avoid compilation.
    - **Start Command**: `uvicorn backend.main:app --host 0.0.0.0 --port $PORT`
 
 4. **Add Environment Variable:**
