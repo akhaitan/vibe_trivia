@@ -172,8 +172,12 @@ trivia/
 │   ├── index.html           # Main UI
 │   ├── styles.css           # Dark mode styling
 │   └── app.js               # Client-side logic
+├── backend/
+│   ├── database.py           # Database models and configuration
+│   └── ...
 ├── data/
-│   └── quiz_history.json    # Quiz history storage (auto-created)
+│   └── trivia.db             # SQLite database (local dev only)
+├── migrate_to_postgres.py     # Migration script (JSON → PostgreSQL)
 ├── requirements.txt
 ├── .env                     # Environment variables (not in git)
 └── README.md
@@ -181,13 +185,29 @@ trivia/
 
 ## Data Persistence
 
-Quiz history is automatically saved to `data/quiz_history.json`. The file is:
-- Created automatically on first quiz submission
-- Updated after every quiz attempt
-- Loaded on application startup
-- Stored in JSON format for easy inspection and migration
+Quiz history is stored in PostgreSQL (Supabase) for production, with SQLite fallback for local development.
 
-The data directory and file are automatically created if they don't exist.
+### Database Setup
+
+**For Production (Supabase):**
+1. Create a project at https://supabase.com
+2. Go to Project Settings → Database
+3. Copy the connection string (URI format)
+4. Set environment variable: `DATABASE_URL=postgresql://...`
+
+**For Local Development:**
+- If `DATABASE_URL` is not set, the app automatically uses SQLite at `data/trivia.db`
+- No additional setup required
+
+### Migration from JSON
+
+If you have existing data in `data/quiz_history.json`, run the migration script:
+
+```bash
+python migrate_to_postgres.py
+```
+
+This will migrate all quiz attempts from JSON to the database.
 
 ## Development
 

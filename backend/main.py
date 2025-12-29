@@ -14,9 +14,13 @@ from backend.models import (
 from backend.services.trivia_service import TriviaService
 from backend.services.scoring_service import ScoringService
 from backend.services.persistence_service import PersistenceService
+from backend.database import init_db
 
 # Load environment variables
 load_dotenv()
+
+# Initialize database on startup
+init_db()
 
 # Configure logging
 logging.basicConfig(

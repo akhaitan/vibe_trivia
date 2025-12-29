@@ -33,6 +33,8 @@ Thumbs.db
 data/
 *.json
 !package.json
+*.db
+*.db-journal
 
 # Distribution / packaging
 dist/
